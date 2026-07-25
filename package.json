@@ -7,11 +7,12 @@
     "url": "https://github.com/lumine-code/super-select/issues"
   },
   "keywords": [
-    "select",
     "slash",
     "normalize",
     "bracket",
-    "string"
+    "string",
+    "quote",
+    "path"
   ],
   "version": "1.0.0",
   "license": "MIT",
