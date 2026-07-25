@@ -4,15 +4,15 @@ Text selection helpers and slash normalization commands.
 
 ## Features
 
-- **String selection**: Select text inside quotes.
-- **Bracket selection**: Select text inside brackets.
-- **Character patterns**: Select by custom character sets.
-- **Slash normalization**: Convert path separators to forward slash, backslash or double backslash.
-- **HTML selection**: Select HTML body or tags.
+- **String selection**: select text inside quotes.
+- **Bracket selection**: select text inside brackets.
+- **Character patterns**: select by custom character sets.
+- **Slash normalization**: convert path separators to forward slash, backslash or double backslash.
+- **HTML selection**: select HTML body or tags.
 
 ## Installation
 
-To install `super-select` search for [super-select](https://web.pulsar-edit.dev/packages/super-select) in the Install pane of the Pulsar settings or run `ppm install super-select`. Alternatively, you can run `ppm install asiloisad/pulsar-super-select` to install a package directly from the GitHub repository.
+To install `super-select` search for _super-select_ in the Install pane of the Lumine settings or run `lumine --install lumine-code/super-select`.
 
 ## Commands
 
@@ -20,8 +20,8 @@ Commands available in `atom-text-editor`:
 
 - `super-select:chars-1`: select text by chars `/[0-9\\p{L}_\\.]/`,
 - `super-select:chars-2`: select text by chars `/[0-9\\p{L}_\\.\\-\\[\\]\\(\\)#]/`,
-- `super-select:string`: select text inside `'''`, `"""`, `'` or `"`,
-- `super-select:string-'-'`: select text inside`'''` or `'`,
+- `super-select:string`: select text inside `'''`, `"""`, `'`, `"` or backticks,
+- `super-select:string-'-'`: select text inside `'''` or `'`,
 - `super-select:string-'''-'''`: select text inside `'''`,
 - `super-select:string-\`-\``: select text inside backticks,
 - `super-select:string-"-"`: select text inside `"""` or `"`,
