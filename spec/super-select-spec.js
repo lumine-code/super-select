@@ -2,19 +2,19 @@ describe("super-select", () => {
   let workspaceElement, editor, editorElement;
 
   beforeEach(async () => {
-    workspaceElement = atom.views.getView(atom.workspace);
+    workspaceElement = lumine.views.getView(lumine.workspace);
     jasmine.attachToDOM(workspaceElement);
-    await atom.packages.activatePackage("super-select");
-    editor = await atom.workspace.open();
-    editorElement = atom.views.getView(editor);
+    await lumine.packages.activatePackage("super-select");
+    editor = await lumine.workspace.open();
+    editorElement = lumine.views.getView(editor);
   });
 
   function dispatch(command) {
-    atom.commands.dispatch(editorElement, command);
+    lumine.commands.dispatch(editorElement, command);
   }
 
-  it("registers its commands on atom-text-editor", () => {
-    const commands = atom.commands
+  it("registers its commands on lumine-text-editor", () => {
+    const commands = lumine.commands
       .findCommands({ target: editorElement })
       .map((command) => command.name);
     expect(commands).toContain("super-select:string");

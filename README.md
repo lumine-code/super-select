@@ -16,7 +16,7 @@ To install `super-select` search for _super-select_ in the Install pane of the L
 
 ## Commands
 
-Commands available in `atom-workspace`:
+Commands available in `lumine-workspace`:
 
 - `super-select:chars-1`: select text by chars `/[0-9\\p{L}_\\.]/`,
 - `super-select:chars-2`: select text by chars `/[0-9\\p{L}_\\.\\-\\[\\]\\(\\)#]/`,
