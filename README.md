@@ -12,7 +12,7 @@ Text selection helpers and slash normalization commands.
 
 ## Installation
 
-To install `super-select` search for _super-select_ in the Install pane of the Lumine settings or run `lumine --install lumine-code/super-select`.
+To install `super-select` search for it in the Install pane of the Lumine settings, or run the command `lumine --install lumine-code/super-select`.
 
 ## Commands
 
