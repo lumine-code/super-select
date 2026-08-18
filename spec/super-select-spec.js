@@ -1,5 +1,7 @@
+const { TextEditor } = require("lumine");
+
 describe("super-select", () => {
-  let workspaceElement, editor, editorElement;
+  let workspaceElement, editor, editorElement, registration;
 
   beforeEach(async () => {
     workspaceElement = lumine.views.getView(lumine.workspace);
@@ -7,6 +9,11 @@ describe("super-select", () => {
     await lumine.packages.activatePackage("super-select");
     editor = await lumine.workspace.open();
     editorElement = lumine.views.getView(editor);
+    registration = null;
+  });
+
+  afterEach(() => {
+    registration?.dispose();
   });
 
   function dispatch(command) {
@@ -127,6 +134,69 @@ describe("super-select", () => {
       editor.selectAll();
       dispatch("super-select:normalize");
       expect(editor.getText()).toBe("C:\\alpha\\beta\\gamma");
+    });
+  });
+
+  describe("mini editors", () => {
+    let miniEditor, miniElement;
+
+    beforeEach(() => {
+      // A find field, go to line, a commit box: `mini` is the only thing that
+      // sets them apart from the editor holding a file, and the surface that
+      // owns one registers it — search-panel does exactly this for its find
+      // and replace fields — which is what puts it in reach of these commands.
+      miniEditor = new TextEditor({ mini: true });
+      miniElement = lumine.views.getView(miniEditor);
+      workspaceElement.appendChild(miniElement);
+      registration = lumine.textEditors.add(miniEditor);
+      miniElement.focus();
+    });
+
+    it("acts on the mini editor that has focus", () => {
+      editor.setText("behind the dialog");
+      editor.setCursorBufferPosition([0, 2]);
+      miniEditor.setText("one.two three");
+      miniEditor.setCursorBufferPosition([0, 3]);
+      dispatch("super-select:chars-1");
+      expect(miniEditor.getSelectedText()).toBe("one.two");
+      expect(editor.getSelectedText()).toBe("");
+    });
+
+    it("selects inside quotes in a mini editor", () => {
+      miniEditor.setText('x = "hello world" + 1');
+      miniEditor.setCursorBufferPosition([0, 8]);
+      dispatch("super-select:string");
+      expect(miniEditor.getSelectedText()).toBe("hello world");
+    });
+
+    it("rewrites slashes in a mini editor", () => {
+      miniEditor.setText("C:/path/to");
+      miniEditor.selectAll();
+      dispatch("super-select:backslash");
+      expect(miniEditor.getText()).toBe("C:\\path\\to");
+    });
+
+    it("leaves an unregistered mini editor alone", () => {
+      // Registration is what a surface opts in with. Without it the editor is
+      // not one these commands know about, so the fallback answers instead.
+      registration.dispose();
+      editor.setText("foo bar.baz qux");
+      editor.setCursorBufferPosition([0, 6]);
+      miniEditor.setText("one.two three");
+      miniEditor.setCursorBufferPosition([0, 3]);
+      dispatch("super-select:chars-1");
+      expect(miniEditor.getSelectedText()).toBe("");
+      expect(editor.getSelectedText()).toBe("bar.baz");
+    });
+
+    it("falls back to the active editor when focus is not in one", () => {
+      // What the application menu does: dispatch at whatever holds focus,
+      // which is not always an editor at all.
+      workspaceElement.focus();
+      editor.setText("foo bar.baz qux");
+      editor.setCursorBufferPosition([0, 6]);
+      dispatch("super-select:chars-1");
+      expect(editor.getSelectedText()).toBe("bar.baz");
     });
   });
 

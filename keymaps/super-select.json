@@ -1,6 +1,9 @@
 {
-  // :not([mini]) because these change the selection in the file.
-  "lumine-text-editor:not([mini])": {
+  // Bare `lumine-text-editor`, deliberately: these act on whatever editor has
+  // focus, so they belong in a mini editor — the find field, go to line, a
+  // commit box — as much as in a file. A picker that wants one of these
+  // keystrokes for itself already outranks this block on specificity.
+  "lumine-text-editor": {
     "alt-s": "super-select:string",
     "alt-d": "super-select:brackets",
     "alt-/": "super-select:forward-slash",
