@@ -148,7 +148,7 @@ describe("super-select", () => {
       miniEditor = new TextEditor({ mini: true });
       miniElement = lumine.views.getView(miniEditor);
       workspaceElement.appendChild(miniElement);
-      registration = lumine.textEditors.add(miniEditor);
+      registration = lumine.textEditors.add(miniEditor, { role: "input" });
       miniElement.focus();
     });
 
@@ -176,17 +176,17 @@ describe("super-select", () => {
       expect(miniEditor.getText()).toBe("C:\\path\\to");
     });
 
-    it("leaves an unregistered mini editor alone", () => {
-      // Registration is what a surface opts in with. Without it the editor is
-      // not one these commands know about, so the fallback answers instead.
+    it("acts on an unregistered focused mini editor", () => {
+      // Focus resolution is structural. Registration exposes an editor to
+      // observers, but is not required to resolve its existing element.
       registration.dispose();
       editor.setText("foo bar.baz qux");
       editor.setCursorBufferPosition([0, 6]);
       miniEditor.setText("one.two three");
       miniEditor.setCursorBufferPosition([0, 3]);
       dispatch("super-select:chars-1");
-      expect(miniEditor.getSelectedText()).toBe("");
-      expect(editor.getSelectedText()).toBe("bar.baz");
+      expect(miniEditor.getSelectedText()).toBe("one.two");
+      expect(editor.getSelectedText()).toBe("");
     });
 
     it("falls back to the active editor when focus is not in one", () => {
