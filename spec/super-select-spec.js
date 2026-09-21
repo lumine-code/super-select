@@ -55,24 +55,24 @@ describe("super-select", () => {
       expect(editor.getSelectedText()).toBe("hello world");
     });
 
-    it("selects text inside single quotes with string-'-'", () => {
+    it("selects text inside single quotes with select-single-quoted-string", () => {
       editor.setText("x = 'abc def' + 1");
       editor.setCursorBufferPosition([0, 8]);
-      dispatch("super-select:string-'-'");
+      dispatch("super-select:select-single-quoted-string");
       expect(editor.getSelectedText()).toBe("abc def");
     });
 
-    it('selects text inside double quotes with string-"-"', () => {
+    it("selects text inside double quotes with select-double-quoted-string", () => {
       editor.setText('x = "abc def" + 1');
       editor.setCursorBufferPosition([0, 8]);
-      dispatch('super-select:string-"-"');
+      dispatch("super-select:select-double-quoted-string");
       expect(editor.getSelectedText()).toBe("abc def");
     });
 
     it("selects text inside backticks", () => {
       editor.setText("x = `tpl str` + 1");
       editor.setCursorBufferPosition([0, 8]);
-      dispatch("super-select:string-`-`");
+      dispatch("super-select:select-backtick-string");
       expect(editor.getSelectedText()).toBe("tpl str");
     });
   });
@@ -92,17 +92,17 @@ describe("super-select", () => {
       expect(editor.getSelectedText()).toBe("a(b)c");
     });
 
-    it("selects text inside square brackets with brackets-[-]", () => {
+    it("selects text inside square brackets with select-square-brackets", () => {
       editor.setText("foo[1, 2](x)");
       editor.setCursorBufferPosition([0, 5]);
-      dispatch("super-select:brackets-[-]");
+      dispatch("super-select:select-square-brackets");
       expect(editor.getSelectedText()).toBe("1, 2");
     });
 
-    it("selects text inside curly braces with brackets-{-}", () => {
+    it("selects text inside curly braces with select-curly-braces", () => {
       editor.setText("val = { a: 1 }");
       editor.setCursorBufferPosition([0, 9]);
-      dispatch("super-select:brackets-{-}");
+      dispatch("super-select:select-curly-braces");
       expect(editor.getSelectedText()).toBe(" a: 1 ");
     });
   });
