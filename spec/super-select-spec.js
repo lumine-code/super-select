@@ -135,6 +135,88 @@ describe("super-select", () => {
       dispatch("super-select:normalize");
       expect(editor.getText()).toBe("C:\\alpha\\beta\\gamma");
     });
+
+    const selectPaths = (paths) => {
+      editor.setText(paths.join("\n"));
+      editor.setSelectedBufferRanges(
+        paths.map((text, row) => [
+          [row, 0],
+          [row, text.length],
+        ]),
+      );
+    };
+
+    it("infers a separator style independently for each selected path", () => {
+      selectPaths(["one/two\\tail", "three\\four/tail"]);
+      dispatch("super-select:normalize");
+      expect(editor.getSelections().map((selection) => selection.getText())).toEqual([
+        "one/two/tail",
+        "three\\four\\tail",
+      ]);
+    });
+
+    it("also preserves independent styles when the first path starts with a backslash", () => {
+      selectPaths(["one\\two/tail", "three/four\\tail"]);
+      dispatch("super-select:normalize");
+      expect(editor.getText()).toBe("one\\two\\tail\nthree/four/tail");
+    });
+
+    it("keeps doubled-backslash inference local to its own selection", () => {
+      selectPaths(["one\\\\two/tail", "three/four\\tail"]);
+      dispatch("super-select:normalize");
+      expect(editor.getSelections().map((selection) => selection.getText())).toEqual([
+        "one\\\\two\\\\tail",
+        "three/four/tail",
+      ]);
+    });
+
+    it("leaves separator-free selections selected and processes later paths", () => {
+      selectPaths(["plain text", "one\\two/tail"]);
+      dispatch("super-select:normalize");
+      expect(editor.getSelections().map((selection) => selection.getText())).toEqual([
+        "plain text",
+        "one\\two\\tail",
+      ]);
+    });
+
+    it("skips collapsed selections without skipping later selected paths", () => {
+      editor.setText("plain text\none\\two/tail");
+      editor.setSelectedBufferRanges([
+        [
+          [0, 0],
+          [0, 0],
+        ],
+        [
+          [1, 0],
+          [1, 12],
+        ],
+      ]);
+      dispatch("super-select:normalize");
+      expect(editor.getText()).toBe("plain text\none\\two\\tail");
+      expect(editor.getSelections()[0].isEmpty()).toBe(true);
+    });
+
+    it("retains the common supplied mode for explicit conversion commands", () => {
+      for (const [command, expected] of [
+        ["super-select:forward-slash", ["one/two/tail", "three/four/tail"]],
+        ["super-select:backslash", ["one\\two\\tail", "three\\four\\tail"]],
+        ["super-select:double-backslash", ["one\\\\two\\\\tail", "three\\\\four\\\\tail"]],
+      ]) {
+        selectPaths(["one/two\\tail", "three\\four/tail"]);
+        dispatch(command);
+        expect(editor.getSelections().map((selection) => selection.getText())).toEqual(expected);
+      }
+    });
+
+    it("restores every normalized selection in one undo step", () => {
+      const paths = ["one/two\\tail", "three\\four/tail"];
+      selectPaths(paths);
+      editor.getBuffer().clearUndoStack();
+      dispatch("super-select:normalize");
+      expect(editor.getText()).toBe("one/two/tail\nthree\\four\\tail");
+      editor.undo();
+      expect(editor.getText()).toBe(paths.join("\n"));
+    });
   });
 
   describe("mini editors", () => {

@@ -31,12 +31,14 @@ Commands available in `lumine-workspace`:
 - `super-select:select-square-brackets`: select text inside `[]`,
 - `super-select:select-curly-braces`: select text inside `{}`,
 - `super-select:select-angle-brackets`: select text inside `<>`,
-- `super-select:normalize`: convert slashes to match the most left slash inside selection,
+- `super-select:normalize`: convert slashes to match the leftmost separator in each selection,
 - `super-select:double-backslash`: convert slashes to `\\` inside selection,
 - `super-select:backslash`: convert slashes to `\` inside selection,
 - `super-select:forward-slash`: convert slashes to `/` inside selection,
 - `super-select:html-body`: select html body,
 - `super-select:html-tags`: select html tags.
+
+Normalize treats each selected path independently. The explicit slash-conversion commands use the requested style for every selection. Empty selections and text without separators are left unchanged, and one undo restores the whole operation.
 
 ## Contributing
 
