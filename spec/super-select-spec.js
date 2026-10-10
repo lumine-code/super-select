@@ -4,6 +4,9 @@ describe("super-select", () => {
   let workspaceElement, editor, editorElement, registration;
 
   beforeEach(async () => {
+    for (const name of ["openExternal", "openPath", "showItemInFolder", "openApplication"])
+      spyOn(lumine.shell, name).and.resolveTo();
+    spyOn(lumine.application, "openWindow").and.resolveTo();
     workspaceElement = lumine.views.getView(lumine.workspace);
     jasmine.attachToDOM(workspaceElement);
     await lumine.packages.activatePackage("super-select");
