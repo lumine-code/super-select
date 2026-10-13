@@ -23,6 +23,34 @@ describe("super-select", () => {
     lumine.commands.dispatch(editorElement, command);
   }
 
+  it("selects quoted text in the active editor from a focused unrelated surface", () => {
+    editor.setText('prefix "selected" suffix');
+    editor.setCursorBufferPosition([0, 11]);
+    const button = document.createElement("button");
+    workspaceElement.appendChild(button);
+    try {
+      button.focus();
+      lumine.commands.dispatch(button, "super-select:string");
+      expect(editor.getSelectedText()).toBe("selected");
+    } finally {
+      button.remove();
+    }
+  });
+
+  it("selects in the dispatch editor even when another editor is active", async () => {
+    editor.setText('prefix "selected" suffix');
+    editor.setCursorBufferPosition([0, 11]);
+    const other = await lumine.workspace.open();
+    other.setText('"other"');
+    try {
+      lumine.commands.dispatch(editorElement, "super-select:string");
+      expect(editor.getSelectedText()).toBe("selected");
+      expect(other.getSelectedText()).toBe("");
+    } finally {
+      other.destroy();
+    }
+  });
+
   it("registers its commands on lumine-text-editor", () => {
     const commands = lumine.commands
       .findCommands({ target: editorElement })
@@ -225,6 +253,10 @@ describe("super-select", () => {
   describe("mini editors", () => {
     let miniEditor, miniElement;
 
+    function dispatch(command) {
+      lumine.commands.dispatch(miniElement, command);
+    }
+
     beforeEach(() => {
       // A find field, go to line, a commit box: `mini` is the only thing that
       // sets them apart from the editor holding a file, and the surface that
@@ -280,7 +312,7 @@ describe("super-select", () => {
       workspaceElement.focus();
       editor.setText("foo bar.baz qux");
       editor.setCursorBufferPosition([0, 6]);
-      dispatch("super-select:chars-1");
+      lumine.commands.dispatch(workspaceElement, "super-select:chars-1");
       expect(editor.getSelectedText()).toBe("bar.baz");
     });
   });
