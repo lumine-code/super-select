@@ -27,7 +27,9 @@
       "submenu": [
         {
           "label": "Select Inside Quotes",
-          "command": "super-select:string"
+          "command": "super-select:string",
+          "group": "units",
+          "order": 50
         }
       ]
     }
