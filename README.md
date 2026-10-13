@@ -10,6 +10,8 @@ Text selection helpers and slash normalization commands.
 - **Slash normalization**: convert path separators to forward slash, backslash or double backslash.
 - **HTML selection**: select HTML body or tags.
 
+![Select the string surrounding the cursor with one command.](.github/demo.png)
+
 ## Installation
 
 To install `super-select` search for it in the Install pane of the Lumine settings, or run the command `lumine --install lumine-code/super-select`.

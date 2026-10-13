@@ -1,0 +1,16 @@
+{
+  "title": "super-select",
+  "description": "Select the string surrounding the cursor with one command.",
+  "recordedOn": "2026-10-13",
+  "sourceRevision": "64045b6f64d9c5f92d1a2247874ddb4c7332e465",
+  "mode": "normal",
+  "fontSettings": "default",
+  "images": [
+    {
+      "file": "demo.png",
+      "label": "Select the string surrounding the cursor with one command.",
+      "width": 1100,
+      "height": 340
+    }
+  ]
+}
