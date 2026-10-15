@@ -7,16 +7,100 @@
           "label": "Super Select",
           "submenu": [
             {
-              "label": "Chars 1",
+              "label": "Select Word and Dots",
               "command": "super-select:chars-1"
             },
             {
-              "label": "Chars 2",
+              "label": "Select Extended Word",
               "command": "super-select:chars-2"
             },
             {
-              "label": "String",
-              "command": "super-select:string"
+              "label": "Select Inside Quotes",
+              "submenu": [
+                {
+                  "label": "Any Quotes",
+                  "command": "super-select:string"
+                },
+                {
+                  "label": "Single Quotes",
+                  "command": "super-select:select-single-quoted-string"
+                },
+                {
+                  "label": "Double Quotes",
+                  "command": "super-select:select-double-quoted-string"
+                },
+                {
+                  "label": "Triple Single Quotes",
+                  "command": "super-select:select-triple-single-quoted-string"
+                },
+                {
+                  "label": "Triple Double Quotes",
+                  "command": "super-select:select-triple-double-quoted-string"
+                },
+                {
+                  "label": "Backticks",
+                  "command": "super-select:select-backtick-string"
+                }
+              ]
+            },
+            {
+              "label": "Select Inside Brackets",
+              "submenu": [
+                {
+                  "label": "Any Brackets",
+                  "command": "super-select:brackets"
+                },
+                {
+                  "label": "Parentheses",
+                  "command": "super-select:select-parentheses"
+                },
+                {
+                  "label": "Square Brackets",
+                  "command": "super-select:select-square-brackets"
+                },
+                {
+                  "label": "Curly Braces",
+                  "command": "super-select:select-curly-braces"
+                },
+                {
+                  "label": "Angle Brackets",
+                  "command": "super-select:select-angle-brackets"
+                }
+              ]
+            },
+            {
+              "label": "Paths",
+              "submenu": [
+                {
+                  "label": "Select Between Forward Slashes",
+                  "command": "super-select:forward-slash"
+                },
+                {
+                  "label": "Select Between Backslashes",
+                  "command": "super-select:backslash"
+                },
+                {
+                  "label": "Select Between Doubled Backslashes",
+                  "command": "super-select:double-backslash"
+                },
+                {
+                  "label": "Normalize Path Separators",
+                  "command": "super-select:normalize"
+                }
+              ]
+            },
+            {
+              "label": "HTML",
+              "submenu": [
+                {
+                  "label": "Select HTML Contents",
+                  "command": "super-select:html-body"
+                },
+                {
+                  "label": "Select HTML Tags",
+                  "command": "super-select:html-tags"
+                }
+              ]
             }
           ]
         }
