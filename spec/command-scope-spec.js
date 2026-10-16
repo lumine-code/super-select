@@ -66,6 +66,27 @@ describe("super-select command scopes", () => {
         .toBe(!mutators.has(command));
   });
 
+  it("does not consume mutation shortcuts in a read-only editor", () => {
+    const element = editor.getElement();
+    for (const name of ["forward-slash", "backslash", "double-backslash"])
+      expect(
+        lumine.keymaps.findKeyBindings({ target: element, command: `super-select:${name}` }).length,
+      )
+        .withContext(name)
+        .toBeGreaterThan(0);
+    element.setAttribute("readonly", "");
+    for (const name of ["forward-slash", "backslash", "double-backslash"])
+      expect(lumine.keymaps.findKeyBindings({ target: element, command: `super-select:${name}` }))
+        .withContext(name)
+        .toEqual([]);
+    for (const name of ["string", "brackets"])
+      expect(
+        lumine.keymaps.findKeyBindings({ target: element, command: `super-select:${name}` }).length,
+      )
+        .withContext(name)
+        .toBeGreaterThan(0);
+  });
+
   it("does not offer local actions in an empty workspace", () => {
     editor.destroy();
     for (const command of commands)

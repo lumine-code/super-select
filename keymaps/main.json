@@ -5,7 +5,9 @@
   // keystrokes for itself already outranks this block on specificity.
   "lumine-text-editor": {
     "cmdorctrl-k '": "super-select:string",
-    "cmdorctrl-k [": "super-select:brackets",
+    "cmdorctrl-k [": "super-select:brackets"
+  },
+  "lumine-text-editor:not([readonly])": {
     "cmdorctrl-k /": "super-select:forward-slash",
     "cmdorctrl-k \\": "super-select:backslash",
     "cmdorctrl-k |": "super-select:double-backslash"
