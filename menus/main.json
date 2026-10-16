@@ -72,15 +72,15 @@
               "label": "Paths",
               "submenu": [
                 {
-                  "label": "Select Between Forward Slashes",
+                  "label": "Convert Path to Forward Slashes",
                   "command": "super-select:forward-slash"
                 },
                 {
-                  "label": "Select Between Backslashes",
+                  "label": "Convert Path to Backslashes",
                   "command": "super-select:backslash"
                 },
                 {
-                  "label": "Select Between Doubled Backslashes",
+                  "label": "Convert Path to Doubled Backslashes",
                   "command": "super-select:double-backslash"
                 },
                 {

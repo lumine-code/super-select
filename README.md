@@ -18,7 +18,7 @@ To install `super-select` search for it in the Install pane of the Lumine settin
 
 ## Commands
 
-Commands available in `lumine-workspace`:
+Commands available in `lumine-text-editor`:
 
 - `super-select:chars-1`: select text by chars `/[0-9\\p{L}_\\.]/`,
 - `super-select:chars-2`: select text by chars `/[0-9\\p{L}_\\.\\-\\[\\]\\(\\)#]/`,
@@ -33,12 +33,15 @@ Commands available in `lumine-workspace`:
 - `super-select:select-square-brackets`: select text inside `[]`,
 - `super-select:select-curly-braces`: select text inside `{}`,
 - `super-select:select-angle-brackets`: select text inside `<>`,
+- `super-select:html-body`: select html body,
+- `super-select:html-tags`: select html tags.
+
+Commands available in `lumine-text-editor:not([readonly])`:
+
 - `super-select:normalize`: convert slashes to match the leftmost separator in each selection,
 - `super-select:double-backslash`: convert slashes to `\\` inside selection,
 - `super-select:backslash`: convert slashes to `\` inside selection,
-- `super-select:forward-slash`: convert slashes to `/` inside selection,
-- `super-select:html-body`: select html body,
-- `super-select:html-tags`: select html tags.
+- `super-select:forward-slash`: convert slashes to `/` inside selection.
 
 Normalize treats each selected path independently. The explicit slash-conversion commands use the requested style for every selection. Empty selections and text without separators are left unchanged, and one undo restores the whole operation.
 

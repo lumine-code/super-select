@@ -23,15 +23,16 @@ describe("super-select", () => {
     lumine.commands.dispatch(editorElement, command);
   }
 
-  it("selects quoted text in the active editor from a focused unrelated surface", () => {
+  it("does not select in the active editor from an unrelated surface", () => {
     editor.setText('prefix "selected" suffix');
     editor.setCursorBufferPosition([0, 11]);
     const button = document.createElement("button");
     workspaceElement.appendChild(button);
     try {
       button.focus();
+      expect(lumine.commands.canDispatch(button, "super-select:string")).toBe(false);
       lumine.commands.dispatch(button, "super-select:string");
-      expect(editor.getSelectedText()).toBe("selected");
+      expect(editor.getSelectedText()).toBe("");
     } finally {
       button.remove();
     }
@@ -306,14 +307,12 @@ describe("super-select", () => {
       expect(editor.getSelectedText()).toBe("");
     });
 
-    it("falls back to the active editor when focus is not in one", () => {
-      // What the application menu does: dispatch at whatever holds focus,
-      // which is not always an editor at all.
+    it("does not redirect workspace commands to the active editor", () => {
       workspaceElement.focus();
       editor.setText("foo bar.baz qux");
       editor.setCursorBufferPosition([0, 6]);
       lumine.commands.dispatch(workspaceElement, "super-select:chars-1");
-      expect(editor.getSelectedText()).toBe("bar.baz");
+      expect(editor.getSelectedText()).toBe("");
     });
   });
 
