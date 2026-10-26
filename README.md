@@ -2,6 +2,8 @@
 
 Text selection helpers and slash normalization commands.
 
+Selection commands read immutable source ranges in bounded blocks, including giant single lines and text beyond the native string limit. Long operations yield to the interface and discard pending work when the text, selections or package generation changes. Slash conversion streams exact edits and publishes large transformations atomically in one undo step; each selection keeps its independently inferred separator style. Character selection follows Unicode code points while preserving UTF-16 buffer coordinates. HTML selection uses a lexical tag scanner with quoted-attribute, comment and void-tag handling; it does not invoke a browser HTML parser.
+
 ## Features
 
 - **String selection**: select text inside quotes.
