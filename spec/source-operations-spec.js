@@ -138,9 +138,19 @@ describe("Cooperative selection command publication", () => {
     expect(await selecting).toBe(false);
     expect(editor.getLastSelection().isEmpty()).toBe(true);
     editor.selectAll();
+    const activeOperations = require("../lib/source-operations");
+    const slashEdits = activeOperations.slashEdits;
+    let visited = 0;
+    spyOn(activeOperations, "slashEdits").and.callFake(function* (...args) {
+      for (const batch of slashEdits(...args)) {
+        visited++;
+        yield batch;
+      }
+    });
     const replacing = main.slashWorker(3, { target: editor.element });
     editor.getBuffer().insert([0, 0], "new");
     expect(await replacing).toBe(false);
     expect(editor.getBuffer().getLength()).toBe(source.length + 3);
+    expect(visited).toBeLessThan(1000);
   });
 });
