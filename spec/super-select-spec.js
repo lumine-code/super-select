@@ -4,6 +4,7 @@ describe("super-select", () => {
   let workspaceElement, editor, editorElement, registration;
 
   beforeEach(async () => {
+    jasmine.useRealClock();
     for (const name of ["openExternal", "openPath", "showItemInFolder", "openApplication"])
       spyOn(lumine.shell, name).and.resolveTo();
     spyOn(lumine.application, "openWindow").and.resolveTo();
@@ -20,10 +21,10 @@ describe("super-select", () => {
   });
 
   function dispatch(command) {
-    lumine.commands.dispatch(editorElement, command);
+    return lumine.commands.dispatch(editorElement, command);
   }
 
-  it("does not select in the active editor from an unrelated surface", () => {
+  it("does not select in the active editor from an unrelated surface", async () => {
     editor.setText('prefix "selected" suffix');
     editor.setCursorBufferPosition([0, 11]);
     const button = document.createElement("button");
@@ -31,7 +32,7 @@ describe("super-select", () => {
     try {
       button.focus();
       expect(lumine.commands.canDispatch(button, "super-select:string")).toBe(false);
-      lumine.commands.dispatch(button, "super-select:string");
+      await lumine.commands.dispatch(button, "super-select:string");
       expect(editor.getSelectedText()).toBe("");
     } finally {
       button.remove();
@@ -44,7 +45,7 @@ describe("super-select", () => {
     const other = await lumine.workspace.open();
     other.setText('"other"');
     try {
-      lumine.commands.dispatch(editorElement, "super-select:string");
+      await lumine.commands.dispatch(editorElement, "super-select:string");
       expect(editor.getSelectedText()).toBe("selected");
       expect(other.getSelectedText()).toBe("");
     } finally {
@@ -63,108 +64,108 @@ describe("super-select", () => {
   });
 
   describe("character selection", () => {
-    it("selects contiguous word characters around the cursor", () => {
+    it("selects contiguous word characters around the cursor", async () => {
       editor.setText("foo bar.baz qux");
       editor.setCursorBufferPosition([0, 6]);
-      dispatch("super-select:chars-1");
+      await dispatch("super-select:chars-1");
       expect(editor.getSelectedText()).toBe("bar.baz");
     });
 
-    it("selects each cursor's word independently", () => {
+    it("selects each cursor's word independently", async () => {
       editor.setText("alpha beta\ngamma delta");
       editor.setCursorBufferPosition([0, 2]);
       editor.addCursorAtBufferPosition([1, 8]);
-      dispatch("super-select:chars-1");
+      await dispatch("super-select:chars-1");
       expect(editor.getSelections().map((s) => s.getText())).toEqual(["alpha", "delta"]);
     });
   });
 
   describe("string selection", () => {
-    it("selects text inside double quotes", () => {
+    it("selects text inside double quotes", async () => {
       editor.setText('x = "hello world" + 1');
       editor.setCursorBufferPosition([0, 8]);
-      dispatch("super-select:string");
+      await dispatch("super-select:string");
       expect(editor.getSelectedText()).toBe("hello world");
     });
 
-    it("selects text inside single quotes with select-single-quoted-string", () => {
+    it("selects text inside single quotes with select-single-quoted-string", async () => {
       editor.setText("x = 'abc def' + 1");
       editor.setCursorBufferPosition([0, 8]);
-      dispatch("super-select:select-single-quoted-string");
+      await dispatch("super-select:select-single-quoted-string");
       expect(editor.getSelectedText()).toBe("abc def");
     });
 
-    it("selects text inside double quotes with select-double-quoted-string", () => {
+    it("selects text inside double quotes with select-double-quoted-string", async () => {
       editor.setText('x = "abc def" + 1');
       editor.setCursorBufferPosition([0, 8]);
-      dispatch("super-select:select-double-quoted-string");
+      await dispatch("super-select:select-double-quoted-string");
       expect(editor.getSelectedText()).toBe("abc def");
     });
 
-    it("selects text inside backticks", () => {
+    it("selects text inside backticks", async () => {
       editor.setText("x = `tpl str` + 1");
       editor.setCursorBufferPosition([0, 8]);
-      dispatch("super-select:select-backtick-string");
+      await dispatch("super-select:select-backtick-string");
       expect(editor.getSelectedText()).toBe("tpl str");
     });
   });
 
   describe("bracket selection", () => {
-    it("selects text inside parentheses", () => {
+    it("selects text inside parentheses", async () => {
       editor.setText("foo(bar, baz)");
       editor.setCursorBufferPosition([0, 6]);
-      dispatch("super-select:brackets");
+      await dispatch("super-select:brackets");
       expect(editor.getSelectedText()).toBe("bar, baz");
     });
 
-    it("selects the innermost matching pair when nested", () => {
+    it("selects the innermost matching pair when nested", async () => {
       editor.setText("(a(b)c)");
       editor.setCursorBufferPosition([0, 6]);
-      dispatch("super-select:brackets");
+      await dispatch("super-select:brackets");
       expect(editor.getSelectedText()).toBe("a(b)c");
     });
 
-    it("selects text inside square brackets with select-square-brackets", () => {
+    it("selects text inside square brackets with select-square-brackets", async () => {
       editor.setText("foo[1, 2](x)");
       editor.setCursorBufferPosition([0, 5]);
-      dispatch("super-select:select-square-brackets");
+      await dispatch("super-select:select-square-brackets");
       expect(editor.getSelectedText()).toBe("1, 2");
     });
 
-    it("selects text inside curly braces with select-curly-braces", () => {
+    it("selects text inside curly braces with select-curly-braces", async () => {
       editor.setText("val = { a: 1 }");
       editor.setCursorBufferPosition([0, 9]);
-      dispatch("super-select:select-curly-braces");
+      await dispatch("super-select:select-curly-braces");
       expect(editor.getSelectedText()).toBe(" a: 1 ");
     });
   });
 
   describe("slash conversion", () => {
-    it("converts backslashes to forward slashes", () => {
+    it("converts backslashes to forward slashes", async () => {
       editor.setText("C:\\path\\to\\file");
       editor.selectAll();
-      dispatch("super-select:forward-slash");
+      await dispatch("super-select:forward-slash");
       expect(editor.getText()).toBe("C:/path/to/file");
     });
 
-    it("converts forward slashes to backslashes", () => {
+    it("converts forward slashes to backslashes", async () => {
       editor.setText("C:/path/to/file");
       editor.selectAll();
-      dispatch("super-select:backslash");
+      await dispatch("super-select:backslash");
       expect(editor.getText()).toBe("C:\\path\\to\\file");
     });
 
-    it("converts slashes to double backslashes", () => {
+    it("converts slashes to double backslashes", async () => {
       editor.setText("C:/path/to");
       editor.selectAll();
-      dispatch("super-select:double-backslash");
+      await dispatch("super-select:double-backslash");
       expect(editor.getText()).toBe("C:\\\\path\\\\to");
     });
 
-    it("normalizes mixed slashes to the leftmost separator style", () => {
+    it("normalizes mixed slashes to the leftmost separator style", async () => {
       editor.setText("C:\\alpha/beta/gamma");
       editor.selectAll();
-      dispatch("super-select:normalize");
+      await dispatch("super-select:normalize");
       expect(editor.getText()).toBe("C:\\alpha\\beta\\gamma");
     });
 
@@ -178,40 +179,40 @@ describe("super-select", () => {
       );
     };
 
-    it("infers a separator style independently for each selected path", () => {
+    it("infers a separator style independently for each selected path", async () => {
       selectPaths(["one/two\\tail", "three\\four/tail"]);
-      dispatch("super-select:normalize");
+      await dispatch("super-select:normalize");
       expect(editor.getSelections().map((selection) => selection.getText())).toEqual([
         "one/two/tail",
         "three\\four\\tail",
       ]);
     });
 
-    it("also preserves independent styles when the first path starts with a backslash", () => {
+    it("also preserves independent styles when the first path starts with a backslash", async () => {
       selectPaths(["one\\two/tail", "three/four\\tail"]);
-      dispatch("super-select:normalize");
+      await dispatch("super-select:normalize");
       expect(editor.getText()).toBe("one\\two\\tail\nthree/four/tail");
     });
 
-    it("keeps doubled-backslash inference local to its own selection", () => {
+    it("keeps doubled-backslash inference local to its own selection", async () => {
       selectPaths(["one\\\\two/tail", "three/four\\tail"]);
-      dispatch("super-select:normalize");
+      await dispatch("super-select:normalize");
       expect(editor.getSelections().map((selection) => selection.getText())).toEqual([
         "one\\\\two\\\\tail",
         "three/four/tail",
       ]);
     });
 
-    it("leaves separator-free selections selected and processes later paths", () => {
+    it("leaves separator-free selections selected and processes later paths", async () => {
       selectPaths(["plain text", "one\\two/tail"]);
-      dispatch("super-select:normalize");
+      await dispatch("super-select:normalize");
       expect(editor.getSelections().map((selection) => selection.getText())).toEqual([
         "plain text",
         "one\\two\\tail",
       ]);
     });
 
-    it("skips collapsed selections without skipping later selected paths", () => {
+    it("skips collapsed selections without skipping later selected paths", async () => {
       editor.setText("plain text\none\\two/tail");
       editor.setSelectedBufferRanges([
         [
@@ -223,28 +224,28 @@ describe("super-select", () => {
           [1, 12],
         ],
       ]);
-      dispatch("super-select:normalize");
+      await dispatch("super-select:normalize");
       expect(editor.getText()).toBe("plain text\none\\two\\tail");
       expect(editor.getSelections()[0].isEmpty()).toBe(true);
     });
 
-    it("retains the common supplied mode for explicit conversion commands", () => {
+    it("retains the common supplied mode for explicit conversion commands", async () => {
       for (const [command, expected] of [
         ["super-select:forward-slash", ["one/two/tail", "three/four/tail"]],
         ["super-select:backslash", ["one\\two\\tail", "three\\four\\tail"]],
         ["super-select:double-backslash", ["one\\\\two\\\\tail", "three\\\\four\\\\tail"]],
       ]) {
         selectPaths(["one/two\\tail", "three\\four/tail"]);
-        dispatch(command);
+        await dispatch(command);
         expect(editor.getSelections().map((selection) => selection.getText())).toEqual(expected);
       }
     });
 
-    it("restores every normalized selection in one undo step", () => {
+    it("restores every normalized selection in one undo step", async () => {
       const paths = ["one/two\\tail", "three\\four/tail"];
       selectPaths(paths);
       editor.getBuffer().clearUndoStack();
-      dispatch("super-select:normalize");
+      await dispatch("super-select:normalize");
       expect(editor.getText()).toBe("one/two/tail\nthree\\four\\tail");
       editor.undo();
       expect(editor.getText()).toBe(paths.join("\n"));
@@ -255,7 +256,7 @@ describe("super-select", () => {
     let miniEditor, miniElement;
 
     function dispatch(command) {
-      lumine.commands.dispatch(miniElement, command);
+      return lumine.commands.dispatch(miniElement, command);
     }
 
     beforeEach(() => {
@@ -270,31 +271,31 @@ describe("super-select", () => {
       miniElement.focus();
     });
 
-    it("acts on the mini editor that has focus", () => {
+    it("acts on the mini editor that has focus", async () => {
       editor.setText("behind the dialog");
       editor.setCursorBufferPosition([0, 2]);
       miniEditor.setText("one.two three");
       miniEditor.setCursorBufferPosition([0, 3]);
-      dispatch("super-select:chars-1");
+      await dispatch("super-select:chars-1");
       expect(miniEditor.getSelectedText()).toBe("one.two");
       expect(editor.getSelectedText()).toBe("");
     });
 
-    it("selects inside quotes in a mini editor", () => {
+    it("selects inside quotes in a mini editor", async () => {
       miniEditor.setText('x = "hello world" + 1');
       miniEditor.setCursorBufferPosition([0, 8]);
-      dispatch("super-select:string");
+      await dispatch("super-select:string");
       expect(miniEditor.getSelectedText()).toBe("hello world");
     });
 
-    it("rewrites slashes in a mini editor", () => {
+    it("rewrites slashes in a mini editor", async () => {
       miniEditor.setText("C:/path/to");
       miniEditor.selectAll();
-      dispatch("super-select:backslash");
+      await dispatch("super-select:backslash");
       expect(miniEditor.getText()).toBe("C:\\path\\to");
     });
 
-    it("acts on an unregistered focused mini editor", () => {
+    it("acts on an unregistered focused mini editor", async () => {
       // Focus resolution is structural. Registration exposes an editor to
       // observers, but is not required to resolve its existing element.
       registration.dispose();
@@ -302,32 +303,32 @@ describe("super-select", () => {
       editor.setCursorBufferPosition([0, 6]);
       miniEditor.setText("one.two three");
       miniEditor.setCursorBufferPosition([0, 3]);
-      dispatch("super-select:chars-1");
+      await dispatch("super-select:chars-1");
       expect(miniEditor.getSelectedText()).toBe("one.two");
       expect(editor.getSelectedText()).toBe("");
     });
 
-    it("does not redirect workspace commands to the active editor", () => {
+    it("does not redirect workspace commands to the active editor", async () => {
       workspaceElement.focus();
       editor.setText("foo bar.baz qux");
       editor.setCursorBufferPosition([0, 6]);
-      lumine.commands.dispatch(workspaceElement, "super-select:chars-1");
+      await lumine.commands.dispatch(workspaceElement, "super-select:chars-1");
       expect(editor.getSelectedText()).toBe("");
     });
   });
 
   describe("html selection", () => {
-    it("selects the surrounding html element with html-body", () => {
+    it("selects the surrounding html element with html-body", async () => {
       editor.setText("<div>\n  <span>text</span>\n</div>");
       editor.setCursorBufferPosition([1, 10]);
-      dispatch("super-select:html-body");
+      await dispatch("super-select:html-body");
       expect(editor.getSelectedText()).toBe("<span>text</span>");
     });
 
-    it("selects the opening and closing tags with html-tags", () => {
+    it("selects the opening and closing tags with html-tags", async () => {
       editor.setText("<div>\n  <span>text</span>\n</div>");
       editor.setCursorBufferPosition([1, 10]);
-      dispatch("super-select:html-tags");
+      await dispatch("super-select:html-tags");
       expect(editor.getSelections().map((s) => s.getText())).toEqual(["<span>", "</span>"]);
     });
   });

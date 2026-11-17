@@ -2,6 +2,7 @@ describe("Unicode character selection", () => {
   let editor, editorElement;
 
   beforeEach(async () => {
+    jasmine.useRealClock();
     for (const name of ["openExternal", "openPath", "showItemInFolder", "openApplication"])
       spyOn(lumine.shell, name).and.resolveTo();
     spyOn(lumine.application, "openWindow").and.resolveTo();
@@ -18,10 +19,10 @@ describe("Unicode character selection", () => {
       await lumine.packages.deactivatePackage("super-select");
   });
 
-  it("selects astral letters on both sides of an ASCII word", () => {
+  it("selects astral letters on both sides of an ASCII word", async () => {
     editor.setText("𐐀alpha𐐁 beta");
     editor.setCursorBufferPosition([0, 4]);
-    lumine.commands.dispatch(editorElement, "super-select:chars-1");
+    await lumine.commands.dispatch(editorElement, "super-select:chars-1");
     expect(editor.getSelectedText()).toBe("𐐀alpha𐐁");
     expect(editor.getSelectedBufferRange().serialize()).toEqual([
       [0, 0],
@@ -29,10 +30,10 @@ describe("Unicode character selection", () => {
     ]);
   });
 
-  it("selects astral letters and the wider command's allowed punctuation", () => {
+  it("selects astral letters and the wider command's allowed punctuation", async () => {
     editor.setText("𐐀𐐁.alpha-2 outside");
     editor.setCursorBufferPosition([0, 7]);
-    lumine.commands.dispatch(editorElement, "super-select:chars-2");
+    await lumine.commands.dispatch(editorElement, "super-select:chars-2");
     expect(editor.getSelectedText()).toBe("𐐀𐐁.alpha-2");
     expect(editor.getSelectedBufferRange().serialize()).toEqual([
       [0, 0],
@@ -40,7 +41,7 @@ describe("Unicode character selection", () => {
     ]);
   });
 
-  it("preserves ASCII and BMP letter selection at the start of a line", () => {
+  it("preserves ASCII and BMP letter selection at the start of a line", async () => {
     for (const [text, command, expected] of [
       ["bar.baz outside", "super-select:chars-1", "bar.baz"],
       ["Żółć outside", "super-select:chars-1", "Żółć"],
@@ -48,7 +49,7 @@ describe("Unicode character selection", () => {
     ]) {
       editor.setText(text);
       editor.setCursorBufferPosition([0, 0]);
-      lumine.commands.dispatch(editorElement, command);
+      await lumine.commands.dispatch(editorElement, command);
       expect(editor.getSelectedText()).toBe(expected);
     }
   });
